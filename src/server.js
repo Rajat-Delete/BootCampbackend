@@ -1,16 +1,25 @@
 const express = require('express');
-const { ServerConfig,Logger } = require('./config');
+const { ServerConfig,Logger,ConnectDB} = require('./config');
 const approutes = require('./routes');
+
+//for connecting the DB
+ConnectDB();
 
 const app = express();
 app.use('/api',approutes);
 
 const PORT = ServerConfig.PORT || 5001;
 
-app.listen(PORT ,(request,response)=>{
+const server = app.listen(PORT ,(request,response)=>{
     console.log(`Server running in ${ServerConfig.NODE_ENV} mode at ${ServerConfig.PORT}`)
     if(ServerConfig.NODE_ENV === 'DEVELOPMENT'){
         Logger.info('Successfully started the Server',{});
     }
     
 });
+
+//so to handle unhandled rejections, we have added below code for terminating the server
+process.on('unhandledRejection',(err,promise)=>{
+    console.log(`Err : ${err.message}`);
+    server.close(()=> process.exit(1));
+})
