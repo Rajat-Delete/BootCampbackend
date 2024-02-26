@@ -6,7 +6,7 @@ router.get('/' ,BootCampController.getBootcamps);
 
 router.get('/:id' ,BootCampController.getBootcampsById);
 
-router.post('/:id' ,BootCampController.postBootcampsById);
+router.post('/' ,BootCampController.postBootcamps);
 
 router.put('/:id' ,BootCampController.putBootcampsById);
 

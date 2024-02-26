@@ -6,6 +6,9 @@ const approutes = require('./routes');
 ConnectDB();
 
 const app = express();
+
+//body parser to parse the incoming body parameters
+app.use(express.json());
 app.use('/api',approutes);
 
 const PORT = ServerConfig.PORT || 5001;
