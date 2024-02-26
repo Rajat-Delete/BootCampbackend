@@ -30,8 +30,32 @@ async function getBootcampById(id){
     }
 }
 
+async function updateBootcampById(request){
+    try {
+        const bootcamp = await Bootcamp.findByIdAndUpdate(request.params.id , request.body , {
+            new : true,
+            runValidators : true,
+        });
+        console.log('bootcamp in update bootcamp',bootcamp);
+        return bootcamp;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function deleteBootcampsById(id){
+    try {
+        const bootcamp = await Bootcamp.findByIdAndDelete(id);
+        return bootcamp;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports ={
     postBootcamp,
     getAllBootcamps,
     getBootcampById,
+    updateBootcampById,
+    deleteBootcampsById,
 }
