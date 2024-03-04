@@ -36,7 +36,7 @@ async function updateBootcampById(request){
             new : true,
             runValidators : true,
         });
-        console.log('bootcamp in update bootcamp',bootcamp);
+        //console.log('bootcamp in update bootcamp',bootcamp);
         return bootcamp;
     } catch (error) {
         throw error;
