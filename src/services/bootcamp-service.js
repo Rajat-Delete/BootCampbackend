@@ -1,13 +1,13 @@
 const { StatusCodes } = require('http-status-codes');
 const Bootcamp = require('../models/bootcamps');
-const { NOTFOUND } = require('dns');
 
 async function postBootcamp(data){
     try{
         const bootcamp = await Bootcamp.create(data);
         return bootcamp;
     }catch(error){
-        // console.log(error);
+        //console.log('error in service',error);
+        //checking for duplicate error message
         throw error;
     }
 }
