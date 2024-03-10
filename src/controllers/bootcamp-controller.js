@@ -6,7 +6,7 @@ const AppError = require('../utils/error/app-error');
 //Access : Public
 async function getBootcamps(request,response){
     try{
-        const bootcamps = await BootcampService.getAllBootcamps();
+        const bootcamps = await BootcampService.getAllBootcamps(request,response);
 
         //since this count was added to every bootcamp as we are passing the reference of the object
         let finalresponse = {};
