@@ -13,4 +13,6 @@ router.put('/:id' ,BootCampMiddleware.validateObject,BootCampController.putBootc
 
 router.delete('/:id' ,BootCampMiddleware.validateObject,BootCampController.deleteBootcampsById);
 
+router.get('/radius/:zipcode/:distance',BootCampController.getBootcampsWithinRadius);
+
 module.exports = router;

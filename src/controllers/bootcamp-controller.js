@@ -20,7 +20,7 @@ async function getBootcamps(request,response){
     }catch(error){
         ErrorResponse.data = error;
         ErrorResponse.message = error.message;
-        response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse);
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorResponse);
     }
 }
 
@@ -35,13 +35,13 @@ async function getBootcampsById(request,response){
         }
         SuccessResponse.data = bootcamp;
         console.log('SuccessResponse in get',SuccessResponse);
-        response.status(StatusCodes.OK).json(SuccessResponse);
+        return response.status(StatusCodes.OK).json(SuccessResponse);
     }catch(error){
         console.log(error);
         ErrorResponse.data = error;
         ErrorResponse.message = error.message;
         //console.log(error.status);
-        response.status(StatusCodes.NOT_FOUND).json(ErrorResponse);
+        return response.status(StatusCodes.NOT_FOUND).json(ErrorResponse);
     }
 }
 
@@ -83,11 +83,11 @@ async function putBootcampsById(request,response){
             throw new AppError(`No Bootcamp found with the Id ${request.params.id}`,StatusCodes.NOT_FOUND);
         }
         SuccessResponse.data = bootcamp;
-        response.status(StatusCodes.OK).json(SuccessResponse);
+        return response.status(StatusCodes.OK).json(SuccessResponse);
     }catch(error){
         console.log(error);
         ErrorResponse.error = error;
-        response.status(StatusCodes.NOT_FOUND).json(ErrorResponse);
+        return response.status(StatusCodes.NOT_FOUND).json(ErrorResponse);
     }
 }
 
@@ -99,11 +99,38 @@ async function deleteBootcampsById(request,response){
             throw new AppError(`No Bootcamp found with the given id ${request.params.id}`,StatusCodes.NOT_FOUND);
         }
         SuccessResponse.data = bootcamp;
-        response.status(StatusCodes.OK).json(SuccessResponse);
+        return response.status(StatusCodes.OK).json(SuccessResponse);
     }catch(error){
         console.log(error);
         ErrorResponse.error = error;
-        response.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+        return response.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+}
+
+//Access : Private
+async function getBootcampsWithinRadius(request,response){
+    try {
+        const {zipcode , distance} = request.params;
+        //console.log('zipcode',zipcode,'radius:',distance);
+        const bootcamps = await BootcampService.getBootcampsWithinRadius({zipcode , distance});
+        //checking if there is no bootcamp for the given scenario
+        if(!bootcamps){
+            //throw new app error
+            throw new AppError(`No Bootcamps exits for the given criteria`,StatusCodes.NOT_FOUND);
+        }
+        let finalresponse = {};
+        finalresponse.success = "true";
+        finalresponse.message = "Successfully completed the request";
+        finalresponse.data = bootcamps;
+        finalresponse.error = {};
+        //adding the count of the bootcamps in the API
+        finalresponse.count = bootcamps.length;
+        return response.status(StatusCodes.OK).json(finalresponse);
+    } catch (error) {
+        console.log('error in getbootcamps with in radius',error);
+        ErrorResponse.error = error;
+        ErrorResponse.message = error.message;
+        return response.status(error.statusCode).json(ErrorResponse);
     }
 }
 
@@ -113,4 +140,5 @@ module.exports = {
     postBootcamps,
     putBootcampsById,
     deleteBootcampsById,
+    getBootcampsWithinRadius,
 }
