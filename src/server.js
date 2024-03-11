@@ -17,8 +17,7 @@ const server = app.listen(PORT ,(request,response)=>{
     console.log(`Server running in ${ServerConfig.NODE_ENV} mode at ${ServerConfig.PORT}`)
     if(ServerConfig.NODE_ENV === 'DEVELOPMENT'){
         Logger.info('Successfully started the Server',{});
-    }
-    
+    }    
 });
 
 //so to handle unhandled rejections, we have added below code for terminating the server

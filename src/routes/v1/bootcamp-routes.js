@@ -1,17 +1,21 @@
 const express = require('express');
 const { BootCampController } = require('../../controllers');
-const {BootCampMiddleware} = require('../../middlewares')
+const {Validators} = require('../../utils/common')
+const CourseRouter = require('./course-routes');
+
 const router = express.Router();
+//Include other resource routers
+router.use('/:bootcampId/courses',CourseRouter);
 
 router.get('/' ,BootCampController.getBootcamps);
 
-router.get('/:id',BootCampMiddleware.validateObject ,BootCampController.getBootcampsById);
+router.get('/:id',Validators.validateObject ,BootCampController.getBootcampsById);
 
 router.post('/' ,BootCampController.postBootcamps);
 
-router.put('/:id' ,BootCampMiddleware.validateObject,BootCampController.putBootcampsById);
+router.put('/:id' ,Validators.validateObject,BootCampController.putBootcampsById);
 
-router.delete('/:id' ,BootCampMiddleware.validateObject,BootCampController.deleteBootcampsById);
+router.delete('/:id' ,Validators.validateObject,BootCampController.deleteBootcampsById);
 
 router.get('/radius/:zipcode/:distance',BootCampController.getBootcampsWithinRadius);
 
