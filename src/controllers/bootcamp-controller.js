@@ -7,15 +7,19 @@ const AppError = require('../utils/error/app-error');
 async function getBootcamps(request,response){
     try{
         const bootcamps = await BootcampService.getAllBootcamps(request,response);
-
+        console.log('bootcamps in controller',bootcamps);
         //since this count was added to every bootcamp as we are passing the reference of the object
         let finalresponse = {};
         finalresponse.success = "true";
         finalresponse.message = "Successfully completed the request";
+        finalresponse.pagination = bootcamps.pagination;
+        //now we need to remove pagination from bootcamp
+        delete bootcamps['pagination'];
         finalresponse.data = bootcamps;
         finalresponse.error = {};
         //adding the count of the bootcamps in the API
         finalresponse.count = bootcamps.length;
+        console.log(finalresponse);
         return response.status(StatusCodes.OK).json(finalresponse);
     }catch(error){
         ErrorResponse.data = error;

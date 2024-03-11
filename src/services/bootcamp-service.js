@@ -22,7 +22,7 @@ async function getAllBootcamps(request,response){
         const reqQuery = { ...request.query };
 
         //removing the fields which are not needed for api find call
-        const removeFields = ['select','sort'];
+        const removeFields = ['select','sort','limit','page'];
 
         removeFields.forEach(param => delete reqQuery[param])
         console.log('reqQuery afetr remove fields',reqQuery);
@@ -50,7 +50,38 @@ async function getAllBootcamps(request,response){
         }else{
             query.sort('-createdAt');
         }
+        //adding the pagination code
+        const page = parseInt(request.query.page,10) || 1;
+        const limit  = parseInt(request.query.limit,10) || 10;
+        const startIndex = (page-1)*limit;
+        const endIndex = page * limit;
+        const total = await Bootcamp.countDocuments();
+        console.log('page--',page,'limit--',limit,'startIndex--',startIndex,'endIndex--',endIndex);
+       
+        //pagination result
+        const pagination = {};
+
+        if(endIndex < total){
+            pagination.next = {
+                page :page + 1,
+                limit
+            }
+        }
+
+        if(startIndex > 0){
+            pagination.previous = {
+                page : page-1,
+                limit,
+            }
+        }
+
+        query = query.skip(startIndex).limit(limit);
+
+        console.log('pagination',pagination);
+        console.log('bootcamps',query);
+
         const bootcamps = await query;
+        bootcamps.pagination = pagination;
         return bootcamps;
     }catch(error){
         throw error;
