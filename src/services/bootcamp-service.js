@@ -1,6 +1,8 @@
 const { StatusCodes } = require('http-status-codes');
 const Bootcamp = require('../models/bootcamps');
+const Course = require('../models/courses');
 const geocoder = require('../utils/common/geocoder');
+const AppError = require('../utils/error/app-error');
 
 async function postBootcamp(data){
     try{
@@ -112,8 +114,15 @@ async function updateBootcampById(request){
 
 async function deleteBootcampsById(id){
     try {
+        //await Bootcamp.findById(id);
         const bootcamp = await Bootcamp.findById(id);
-        bootcamp.deleteOne();
+        if(!bootcamp){
+            throw new AppError(`No Bootcamp found for the Given Id`,StatusCodes.NOT_FOUND);
+        }
+
+        //Since the prehook for the remove is not working so explicity deleting the records of courses first and then deleting the bootcamp
+        await Course.deleteMany({bootcamp : id});
+        await Bootcamp.deleteOne({_id : id});
         return bootcamp;
     } catch (error) {
         throw error;
