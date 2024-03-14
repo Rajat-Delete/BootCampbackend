@@ -6,7 +6,10 @@ async function getCourses(data){
         //means /api/v1/bootcamp/:bootcampId/Courses is getting called 
         try {
             console.log('courses');
-            const courses = await Course.find({bootcamp: data});
+            const courses = await Course.find({bootcamp: data}).populate({
+                path : 'bootcamp',
+                select : 'name description',
+            });
             console.log('courses as per bootcamp',courses);
             return courses;
         } catch (error) {
@@ -15,7 +18,10 @@ async function getCourses(data){
     }else{
         try {
             console.log('courses as');
-            const courses = await Course.find();
+            const courses = await Course.find().populate({
+                path : 'bootcamp',
+                select : 'name description',
+            });
             console.log('All course',courses);
             return courses;
         } catch (error) {

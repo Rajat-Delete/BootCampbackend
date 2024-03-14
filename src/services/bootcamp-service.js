@@ -35,7 +35,7 @@ async function getAllBootcamps(request,response){
         queryString = queryString.replace(/\b(lt|lte|gt|gte|in)\b/g,match => `$${match}`)
         console.log(`queryString after is ${queryString}`);
 
-        query = Bootcamp.find(JSON.parse(queryString));
+        query = Bootcamp.find(JSON.parse(queryString)).populate('courses');
 
         //selecting the fields post befor executing the query
         if(request.query.select){
@@ -112,7 +112,8 @@ async function updateBootcampById(request){
 
 async function deleteBootcampsById(id){
     try {
-        const bootcamp = await Bootcamp.findByIdAndDelete(id);
+        const bootcamp = await Bootcamp.findById(id);
+        bootcamp.deleteOne();
         return bootcamp;
     } catch (error) {
         throw error;
