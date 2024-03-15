@@ -51,8 +51,33 @@ async function postCourses(data){
         throw error;
     }
 }
+
+async function putCoursesById(request){
+    try {
+       const course = await Course.findByIdAndUpdate(request.params.id, request.body, {
+            new :true,
+            runValidators : true,
+       });
+       console.log('course in udpatecourses',course);
+       return course;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function deleteCoursesById(id){
+    try {
+        console.log(' in deleteCoursesById s')
+        const course = await Course.findByIdAndDelete(id);
+        return course;
+    } catch (error) {
+        throw error;
+    }
+}
 module.exports = {
     getCourses,
     getCoursesById,
     postCourses,
+    putCoursesById,
+    deleteCoursesById,
 }

@@ -55,16 +55,50 @@ async function postCourses(request,response){
         SuccessResponse.data = course;
         return response.status(StatusCodes.CREATED).json(SuccessResponse);
     } catch (error) {
-        console.log('error in service::',error);
+        console.log('error in controller::',error);
         ErrorResponse.error = error;
         ErrorResponse.message = error.message;
         return response.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
     }
 }
 
+async function updateCourseById(request,response){
+    try {
+        const course = await CourseService.putCoursesById(request);
+        if(!course){
+            throw new AppError(`No Course Exists for the given CourseId`,StatusCodes.OK);
+        }
+        SuccessResponse.data = course;
+        return response.status(StatusCodes.OK).json(SuccessResponse);
+    } catch (error) {
+        console.log('error in controller::',error);
+        ErrorResponse.error = error;
+        ErrorResponse.message = error.message;
+        return response.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+}
+
+async function deleteCourseById(request,response){
+    try {
+        console.log(' in deleteCourseById')
+        const course = await CourseService.deleteCoursesById(request.params.id);
+        if(!course){
+            throw new AppError(`No Course Exists for the given CourseId`,StatusCodes.OK);
+        }
+        SuccessResponse.data = course;
+        return response.status(StatusCodes.OK).json(SuccessResponse);
+    } catch (error) {
+        console.log('error in controller::',error);
+        ErrorResponse.error = error;
+        ErrorResponse.message = error.message;
+        return response.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+}
 
 module.exports = {
     getCourses,
     getCoursesById,
     postCourses,
+    updateCourseById,
+    deleteCourseById,
 }

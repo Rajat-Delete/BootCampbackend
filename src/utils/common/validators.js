@@ -26,7 +26,18 @@ function validateBootcampObject(request,response,next){
     next();
 }
 
+function validateIdPresent(request,response,next){
+    console.log ('in validateIdPresent',request.params.id);
+   if(!request.params.id){
+    console.log(`id not in incoming requets ${id}`);
+    ErrorResponse.message = 'Id was not found in Incoming request';
+    ErrorResponse.error = new AppError({'Explanation' : 'Id was not found in the Incoming request'},StatusCodes.NOT_FOUND);
+    return response.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+   }
+   next();
+}
 module.exports = {
     validateObject,
     validateBootcampObject,
+    validateIdPresent,
 }
