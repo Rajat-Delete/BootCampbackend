@@ -145,10 +145,11 @@ async function getBootcampsWithinRadius(data){
         //radius of earth is 3963 miles / 6378 km
 
         const radius = distance/3963;
-        //console.log(longitude,"--",latitude,"--",radius,"--",distance,"--")
+        console.log(longitude,"--",latitude,"--",radius,"--",distance,"--")
         const bootcamps = await Bootcamp.find({
             location : { $geoWithin: { $centerSphere: [ [ longitude, latitude ], radius ] }}
             });
+        console.log('Bootcamps in area are',bootcamps);
         return bootcamps;
     } catch (error) {
         throw error;

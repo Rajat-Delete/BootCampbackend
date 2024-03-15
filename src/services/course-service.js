@@ -31,6 +31,28 @@ async function getCourses(data){
     
 }
 
+
+async function getCoursesById(id){
+    try {
+        const course  = await Course.findById(id);
+        return course;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+async function postCourses(data){
+    try {
+        const course = await Course.create(data);
+        return course;
+    } catch (error) {
+        //console.log('error in service::',error.message);
+        throw error;
+    }
+}
 module.exports = {
     getCourses,
+    getCoursesById,
+    postCourses,
 }

@@ -8,6 +8,11 @@ async function getBootcamps(request,response){
     try{
         const bootcamps = await BootcampService.getAllBootcamps(request,response);
         console.log('bootcamps in controller',bootcamps);
+        //adding a check to find all the incoming bootcamps from the database
+        if(bootcamps.length  === 0){
+            //No bootcamp exits in the database
+            throw new AppError(`No bootcamps exits`,StatusCodes.NOT_FOUND);
+        }   
         //since this count was added to every bootcamp as we are passing the reference of the object
         let finalresponse = {};
         finalresponse.success = "true";

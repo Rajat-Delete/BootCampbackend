@@ -5,7 +5,7 @@ const CourseRouter = require('./course-routes');
 
 const router = express.Router();
 //Include other resource routers
-router.use('/:bootcampId/courses',CourseRouter);
+router.use('/:bootcampId/courses',Validators.validateBootcampObject,CourseRouter);
 
 router.get('/' ,BootCampController.getBootcamps);
 

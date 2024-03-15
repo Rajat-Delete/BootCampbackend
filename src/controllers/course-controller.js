@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 const { SuccessResponse , ErrorResponse } = require('../utils/common');
 const AppError = require('../utils/error/app-error');
-const {CourseService} = require('../services')
+const {CourseService} = require('../services');
 
 async function getCourses(request,response){
     try {
@@ -9,7 +9,7 @@ async function getCourses(request,response){
         console.log('request in controller::',request.params.bootcampId);
         const courses = await CourseService.getCourses(request.params.bootcampId);
         //console.log('courses in controller',courses);
-        if(!courses){
+        if(courses.length === 0){
             //then throw custom error here
             throw new AppError(`No Courses exists`,StatusCodes.NOT_FOUND);
         }
@@ -29,7 +29,42 @@ async function getCourses(request,response){
     }
 }
 
+async function getCoursesById(request,response){
+    try {
+        const course = await CourseService.getCoursesById(request.params.id);
+        if(!course){
+            throw new AppError(`No Course Exists for the given CourseId`,StatusCodes.NOT_FOUND);
+        }
+        SuccessResponse.data = course;
+        return response.status(StatusCodes.OK).json(SuccessResponse);
+    } catch (error) {
+        ErrorResponse.error = error;
+        ErrorResponse.message = error.message;
+        return response.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+}
+
+async function postCourses(request,response){
+    try {
+        request.body.bootcamp = request.params.bootcampId;
+        console.log('request body is',request.body);
+        const course = await CourseService.postCourses(request.body);
+        if(!course){
+            throw new AppError(`Something went wrong while creating course`,StatusCodes.BAD_REQUEST);
+        }
+        SuccessResponse.data = course;
+        return response.status(StatusCodes.CREATED).json(SuccessResponse);
+    } catch (error) {
+        console.log('error in service::',error);
+        ErrorResponse.error = error;
+        ErrorResponse.message = error.message;
+        return response.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+}
+
 
 module.exports = {
     getCourses,
+    getCoursesById,
+    postCourses,
 }
