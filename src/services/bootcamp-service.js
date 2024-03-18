@@ -92,7 +92,7 @@ async function getAllBootcamps(request,response){
 
 async function getBootcampById(id){
     try {
-        const bootcamp = await Bootcamp.findById(id);
+        const bootcamp = await Bootcamp.findById(id).populate('courses');
         return bootcamp;
     } catch (error) {
         throw error;

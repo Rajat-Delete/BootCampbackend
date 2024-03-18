@@ -34,7 +34,10 @@ async function getCourses(data){
 
 async function getCoursesById(id){
     try {
-        const course  = await Course.findById(id);
+        const course  = await Course.findById(id).populate({
+            path:'bootcamp',
+            select : 'name description',
+        });
         return course;
     } catch (error) {
         throw error;
@@ -67,8 +70,12 @@ async function putCoursesById(request){
 
 async function deleteCoursesById(id){
     try {
-        console.log(' in deleteCoursesById s')
-        const course = await Course.findByIdAndDelete(id);
+        console.log(' in deleteCoursesById s');
+        //let's try a approach to first find by Id and then going for deleting the course
+
+        let course = await Course.findById({'_id': id});
+        console.log(`course came is ${course}`)
+        await course.deleteOne();
         return course;
     } catch (error) {
         throw error;

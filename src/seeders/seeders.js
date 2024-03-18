@@ -24,7 +24,7 @@ const coursedata  = JSON.parse(fs.readFileSync(path.join(__dirname,'..','_data',
 async function importData(){
     try{
         await Bootcamp.insertMany(data);
-        await Course.insertMany(coursedata);
+        //await Course.insertMany(coursedata);
         console.log('data inserted successfully');
         process.exit();
     }catch(error){
