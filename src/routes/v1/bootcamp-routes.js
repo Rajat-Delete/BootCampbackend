@@ -7,6 +7,8 @@ const router = express.Router();
 //Include other resource routers
 router.use('/:bootcampId/courses',Validators.validateBootcampObject,CourseRouter);
 
+router.put('/:bootcampId/photo',Validators.validateBootcampObject,BootCampController.uploadBootcampPhoto)
+
 router.get('/' ,BootCampController.getBootcamps);
 
 router.get('/:id',Validators.validateObject ,BootCampController.getBootcampsById);

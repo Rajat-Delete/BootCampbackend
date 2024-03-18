@@ -143,6 +143,20 @@ async function getBootcampsWithinRadius(request,response){
     }
 }
 
+
+async function uploadBootcampPhoto(request,response){
+    try {
+        const bootcamp = await BootcampService.uploadBootcampPhoto(request);
+        console.log('bootcamp coming after service',bootcamp);
+        SuccessResponse.data = bootcamp;
+        return response.status(StatusCodes.OK).json(SuccessResponse);
+    } catch (error) {
+        ErrorResponse.error= error;
+        ErrorResponse.message = error.message;
+        return response.status(StatusCodes.BAD_REQUEST).json(ErrorResponse);
+    }
+}
+
 module.exports = {
     getBootcamps,
     getBootcampsById,
@@ -150,4 +164,5 @@ module.exports = {
     putBootcampsById,
     deleteBootcampsById,
     getBootcampsWithinRadius,
+    uploadBootcampPhoto,
 }

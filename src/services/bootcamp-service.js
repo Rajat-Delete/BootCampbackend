@@ -3,6 +3,8 @@ const Bootcamp = require('../models/bootcamps');
 const Course = require('../models/courses');
 const geocoder = require('../utils/common/geocoder');
 const AppError = require('../utils/error/app-error');
+const { ServerConfig } = require('../config');
+const path = require('path');
 
 async function postBootcamp(data){
     try{
@@ -156,6 +158,57 @@ async function getBootcampsWithinRadius(data){
     }
 }
 
+
+async function uploadBootcampPhoto(data){
+    try {
+        console.log(data.params.bootcampId);
+        const bootcamp = await Bootcamp.findById(data.params.bootcampId);
+        //check for the bootcamp id present or not
+        if(!bootcamp){
+            throw new AppError(`No bootcamp exist with the given Id ${data.params.bootcampId}`,StatusCodes.BAD_REQUEST);
+        }
+        //checking if the user has attached a photo or not
+        if(!data.files){
+            throw new AppError(`No files was found in the incoming request`,StatusCodes.BAD_REQUEST);
+        }
+        //checking if the file exist is a valid Image type or not
+        console.log(data.files.File);
+        if(!data.files.File.mimetype.startsWith('image')){
+            throw new AppError(`Please upload a valid Image for the BootCamp`,StatusCodes.BAD_REQUEST);
+        }
+
+        //checking the size of the Image
+        if(data.files.File.size > ServerConfig.BOOTCAMP_PHOTO_SIZE){
+            throw new AppError(`Please upload Image with size less than ${ServerConfig.BOOTCAMP_PHOTO_SIZE}`,StatusCodes.BAD_REQUEST);
+        }
+
+        //renaming the image so that bootcamp photos cannot be overrided
+        const imageName =  `image_${data.params.bootcampId}${path.parse(data.files.File.name).ext}`;
+        console.log(imageName);
+        data.files.File.name = imageName;
+
+        const fileuploadPath = path.join(__dirname,'..','public','uploads');
+        // require('../public/uploads');
+
+        //let updatedBootcamp;
+        //writing the code for moving the uploaded image in public folder and later adding it as static 
+        data.files.File.mv(`${fileuploadPath}/${imageName}`, async error=>{
+            console.log(`error while file upload`,error);
+            if(error){
+                throw new AppError(`Something went wrong while uploading the file`,StatusCodes.INTERNAL_SERVER_ERROR);
+            }
+
+            await Bootcamp.findByIdAndUpdate(data.params.bootcampId , {'photo' : imageName});
+            //updatedBootcamp = await Bootcamp.findById(data.params.bootcampId);
+            console.log('1>>',updatedBootcamp);
+        });
+        return 'File Uploaded Successfully';
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
 module.exports ={
     postBootcamp,
     getAllBootcamps,
@@ -163,4 +216,5 @@ module.exports ={
     updateBootcampById,
     deleteBootcampsById,
     getBootcampsWithinRadius,
+    uploadBootcampPhoto,
 }
