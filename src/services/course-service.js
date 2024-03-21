@@ -1,7 +1,7 @@
 const Course = require('../models/courses');
 
 async function getCourses(data){
-
+    //console.log(`request.url>`,data);
     if(data){
         //means /api/v1/bootcamp/:bootcampId/Courses is getting called 
         try {
