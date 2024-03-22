@@ -1,5 +1,7 @@
 const mongoose  = require('mongoose');
-
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { ServerConfig } = require('../config');
 
 const UserSchema = new mongoose.Schema({
     name : {
@@ -24,12 +26,28 @@ const UserSchema = new mongoose.Schema({
         select :false,
         minlength : 6,
     },
-    resetPasswordToken : true,
-    resetPasswordExpire : true,
+    resetPasswordToken : String,
+    resetPasswordExpire : Date,
     createdAt : {
         type : Date,
         default : Date.now,
     }
 });
+
+//Encrypting the password using bcrypt
+UserSchema.pre('save', async function(){
+    //generating the salt for the password, max the salt stronger will the password
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password,salt);
+});
+
+//signin JWT and return
+UserSchema.methods.getSignedWebToken = function(){
+    return jwt.sign({id : this._id} ,ServerConfig.JWT_SECRET_KEY , {
+        expiresIn : ServerConfig.JWT_EXPIRE
+    })
+}
+
+
 
 module.exports = mongoose.model('User',UserSchema);
