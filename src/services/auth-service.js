@@ -11,7 +11,37 @@ async function registerUser(request){
             role  ,
             password ,
         });
+        user.password = undefined;
+        console.log(user);
         return user;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+async function loginUser(request){
+    try {
+        const {email, password} = request.body;
+
+        //checking if the user exists 
+        const user = await User.findOne({ email }).select('+password');
+
+        //since we have select password as false in model so here add select
+
+        if(!user){
+            throw new AppError(`Invalid credentials`,StatusCodes.UNAUTHORIZED);
+        }
+
+        //compare passwords
+        const isMatch = await user.comparePassword(password);
+
+        if(!isMatch){
+            throw new AppError('Invalid credentials',StatusCodes.UNAUTHORIZED);
+        }
+
+        return user;
+
     } catch (error) {
         throw error;
     }
@@ -19,4 +49,5 @@ async function registerUser(request){
 
 module.exports = {
     registerUser,
+    loginUser,
 }

@@ -48,6 +48,11 @@ UserSchema.methods.getSignedWebToken = function(){
     })
 }
 
+//comparing the Incoming passwords with the passwords in DB
+UserSchema.methods.comparePassword = async function (enteredPassword){
+    return await bcrypt.compare(enteredPassword , this.password);
+}
+
 
 
 module.exports = mongoose.model('User',UserSchema);
