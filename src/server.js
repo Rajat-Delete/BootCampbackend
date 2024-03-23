@@ -2,7 +2,7 @@ const express = require('express');
 const { ServerConfig,Logger,ConnectDB} = require('./config');
 const approutes = require('./routes');
 const fileupload  = require('express-fileupload')
-
+const cookieParser = require('cookie-parser');
 //for connecting the DB
 ConnectDB();
 
@@ -11,6 +11,7 @@ const app = express();
 //body parser to parse the incoming body parameters
 app.use(express.json());
 app.use(fileupload());
+app.use(cookieParser());
 app.use('/api',approutes);
 
 const PORT = ServerConfig.PORT || 5001;

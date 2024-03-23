@@ -12,4 +12,5 @@ module.exports = {
     BOOTCAMP_PHOTO_FILE_UPLOAD_PATH : process.env.BOOTCAMP_PHOTO_FILE_UPLOAD_PATH,
     JWT_SECRET_KEY : process.env.JWT_SECRET_KEY,
     JWT_EXPIRE : process.env.JWT_EXPIRE,
+    JWT_COOKIE_EXPIRE : process.env.JWT_COOKIE_EXPIRE,
 }
