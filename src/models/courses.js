@@ -36,9 +36,12 @@ const CourseSchema = new mongoose.Schema({
         type : mongoose.Schema.ObjectId,
         ref : 'Bootcamp',
         required : true,
+    },
+    user:{
+        type : mongoose.Schema.ObjectId,
+        required : true,
+        ref : 'User',
     }
-
-
 })
 
 //creating a statics on course schema

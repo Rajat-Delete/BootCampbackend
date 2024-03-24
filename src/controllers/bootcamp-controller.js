@@ -2,6 +2,7 @@ const { StatusCodes }= require('http-status-codes');
 const { BootcampService } = require('../services');
 const { SuccessResponse , ErrorResponse } = require('../utils/common');
 const AppError = require('../utils/error/app-error');
+const Bootcamp = require('../models/bootcamps');
 
 //Access : Public
 async function getBootcamps(request,response){
@@ -58,6 +59,19 @@ async function getBootcampsById(request,response){
 //Access : Public
 async function postBootcamps(request,response){
     try{
+        //will take the userId from the incoming request and put in request body
+        request.body.user = request.user.id;
+        console.log('body in controller',request.body);
+        console.log('request user role',request.user.role);
+
+        //checking if there should be only one bootcamp published by publisher
+        //Only admin roles can post as many bootcamps
+        const publishedBootcamp = await Bootcamp.findOne({user : request.user.id});
+
+        if(request.user.role !== 'admin' && publishedBootcamp){
+            throw new AppError(`The User with Id ${request.user.id} has already published a Bootcamp`,StatusCodes.BAD_REQUEST);
+        }
+        
         const bootcamp = await BootcampService.postBootcamp(request.body);
         SuccessResponse.data = bootcamp;
         return response.status(StatusCodes.CREATED).json(SuccessResponse);
@@ -86,11 +100,20 @@ async function postBootcamps(request,response){
 //Access : Public
 async function putBootcampsById(request,response){
     try{
-        const bootcamp = await BootcampService.updateBootcampById(request);
+        //finding the bootcamp from DB
+        let bootcamp = await Bootcamp.findById(request.params.id);
         console.log('bootcamp in update bootcamp ',bootcamp);
         if(!bootcamp){
             throw new AppError(`No Bootcamp found with the Id ${request.params.id}`,StatusCodes.NOT_FOUND);
         }
+
+        //make sure only the owner or admin is able to updated the bootcamp
+        if(bootcamp.user.toString() !== request.user.id && request.user.role !== 'admin'){
+            throw new AppError(`User ${request.user.id} is not authorized to update this bootcamp`,StatusCodes.UNAUTHORIZED);
+        }
+
+        bootcamp = await BootcampService.updateBootcampById(request);
+        
         SuccessResponse.data = bootcamp;
         return response.status(StatusCodes.OK).json(SuccessResponse);
     }catch(error){
@@ -103,10 +126,19 @@ async function putBootcampsById(request,response){
 //Access : Public
 async function deleteBootcampsById(request,response){
     try{
-        const bootcamp = await BootcampService.deleteBootcampsById(request.params.id);
+
+        let  bootcamp = await Bootcamp.findById(request.params.id);
         if(!bootcamp){
             throw new AppError(`No Bootcamp found with the given id ${request.params.id}`,StatusCodes.NOT_FOUND);
         }
+
+        //make sure only the owner or admin is able to delete the bootcamp
+        if(bootcamp.user.toString() !== request.user.id && request.user.role !== 'admin'){
+            throw new AppError(`User ${request.user.id} is not authorized to delete this bootcamp`,StatusCodes.UNAUTHORIZED);
+        }
+
+        bootcamp = await BootcampService.deleteBootcampsById(request.params.id);
+        
         SuccessResponse.data = bootcamp;
         return response.status(StatusCodes.OK).json(SuccessResponse);
     }catch(error){
@@ -146,7 +178,18 @@ async function getBootcampsWithinRadius(request,response){
 
 async function uploadBootcampPhoto(request,response){
     try {
-        const bootcamp = await BootcampService.uploadBootcampPhoto(request);
+
+        let bootcamp = await Bootcamp.findById(request.params.bootcampId);
+        if(!bootcamp){
+            throw new AppError(`No Bootcamp found with the given id ${request.params.id}`,StatusCodes.NOT_FOUND);
+        }
+
+        //make sure only the owner or admin is able to delete the bootcamp
+        if(bootcamp.user.toString() !== request.user.id && request.user.role !== 'admin'){
+            throw new AppError(`User ${request.user.id} is not authorized to delete this bootcamp`,StatusCodes.UNAUTHORIZED);
+        }
+        
+        bootcamp = await BootcampService.uploadBootcampPhoto(request);
         console.log('bootcamp coming after service',bootcamp);
         SuccessResponse.data = bootcamp;
         return response.status(StatusCodes.OK).json(SuccessResponse);
