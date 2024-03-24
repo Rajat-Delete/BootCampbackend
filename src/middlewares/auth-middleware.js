@@ -65,7 +65,21 @@ async function verifyProtectedRoutes(request,response,next){
     }
 }
 
+
+//grant access to specific roles
+function authorize(request,response,next){
+    //roles which have access to update or create resources
+    const roles = ['publisher','admin'];
+    if(!roles.includes(request.user.role)){
+        ErrorResponse.error = new AppError(`User role ${request.user.role} is not authorized to access this route`,StatusCodes.UNAUTHORIZED);
+        ErrorResponse.message = 'Not Authorised to access this route';
+        return response.status(StatusCodes.UNAUTHORIZED).json(ErrorResponse);
+    }
+    next();
+}
+
 module.exports = {
     validateEmailPassword,
     verifyProtectedRoutes,
+    authorize,
 }
